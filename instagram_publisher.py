@@ -9,7 +9,7 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from instagrapi import Client
-from instagrapi.exceptions import LoginRequired
+from instagrapi.exceptions import LoginRequired, TwoFactorRequired
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -42,10 +42,14 @@ class InstagramPublisher:
             if self.session_file.exists():
                 logger.info(f"Загружаю сессию из {self.session_file}")
                 self.client.load_settings(self.session_file)
-                self.client.login(self.username, self.password)
-            else:
+
+            try:
                 logger.info(f"Логин в Instagram как {self.username}")
                 self.client.login(self.username, self.password)
+            except TwoFactorRequired:
+                print("\nInstagram запросил код двухфакторной аутентификации")
+                code = input("Введите код подтверждения: ").strip()
+                self.client.login(self.username, self.password, verification_code=code)
 
             self.client.dump_settings(self.session_file)
             logger.info("Успешный вход!")
