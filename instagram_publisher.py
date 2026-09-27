@@ -28,8 +28,17 @@ class InstagramPublisher:
         Path("sessions").mkdir(exist_ok=True)
         Path("logs").mkdir(exist_ok=True)
 
+    def _handle_challenge(self, username: str, choice: str) -> str:
+        """Обработка запроса кода подтверждения Instagram (2FA/верификация)"""
+        print(f"\nТребуется верификация Instagram для {username}")
+        print(f"Способ верификации: {choice}")
+        code = input("Введите код подтверждения: ").strip()
+        return code
+
     def login(self) -> bool:
         try:
+            self.client.challenge_code_handler = self._handle_challenge
+
             if self.session_file.exists():
                 logger.info(f"Загружаю сессию из {self.session_file}")
                 self.client.load_settings(self.session_file)
