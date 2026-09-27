@@ -8,11 +8,13 @@ import os
 import logging
 from datetime import datetime, time, timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 from instagram_publisher import InstagramPublisher
 from photo_generator import TravelPhotoGenerator
 from content_calendar import POSTS_SCHEDULE
 
+load_dotenv()
 Path("logs").mkdir(exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
